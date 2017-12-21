@@ -15,18 +15,24 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
 
   vsSource = `
     attribute vec4 aVertexPosition;
+    attribute vec4 aVertexColor;
 
     uniform mat4 uModelViewMatrix;
     uniform mat4 uProjectionMatrix;
 
-    void main() {
+    varying lowp vec4 vColor;
+
+    void main(void) {
       gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
+      vColor = aVertexColor;
     }
   `;
 
   fsSource = `
-    void main() {
-      gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    varying lowp vec4 vColor;
+
+    void main(void) {
+      gl_FragColor = vColor;
     }
   `;
 
@@ -35,6 +41,13 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
     -1.0,  1.0,
     1.0, -1.0,
     -1.0, -1.0,
+  ];
+
+  sqr_col_array = [
+    1.0,  1.0,  1.0,  1.0,
+    1.0,  0.0,  0.0,  1.0,
+    0.0,  1.0,  0.0,  1.0,
+    0.0,  0.0,  1.0,  1.0,
   ];
 
   constructor() { }
@@ -61,6 +74,7 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
       program: shaderProg,
       attribLocations: {
         vertexPosition: this.gl.getAttribLocation(shaderProg, 'aVertexPosition'),
+        vertexColor: this.gl.getAttribLocation(shaderProg, 'aVertexColor'),
       },
       uniformLocations: {
         projectionMatrix: this.gl.getUniformLocation(shaderProg, 'uProjectionMatrix'),
@@ -101,6 +115,24 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
         stride,
         offset);
       this.gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
+    }
+
+    {
+      const numComponents = 4;
+      const type = this.gl.FLOAT;
+      const normalize = false;
+      const stride = 0;
+      const offset = 0;
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffers.color);
+      this.gl.vertexAttribPointer(
+        programInfo.attribLocations.vertexColor,
+        numComponents,
+        type,
+        normalize,
+        stride,
+        offset);
+      this.gl.enableVertexAttribArray(
+        programInfo.attribLocations.vertexColor);
     }
 
     this.gl.useProgram(programInfo.program);
@@ -149,8 +181,13 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, posBuffer);
     this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.sqr_pos_array), this.gl.STATIC_DRAW);
 
+    const colBuffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colBuffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.sqr_col_array), this.gl.STATIC_DRAW);
+
     const bufferObj = {
-      position: posBuffer
+      position: posBuffer,
+      color: colBuffer,
     };
     return bufferObj;
   }
