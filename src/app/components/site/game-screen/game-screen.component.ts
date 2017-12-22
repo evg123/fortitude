@@ -2,6 +2,8 @@
 
 import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {mat4} from 'gl-matrix';
+import {GameService} from '../../../services/game.service.client';
+import {InputService} from '../../../services/input.service.client';
 
 @Component({
   selector: 'app-game-screen',
@@ -50,7 +52,14 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
     0.0,  0.0,  1.0,  1.0,
   ];
 
-  constructor() { }
+  private programInfo: any;
+  private bufferInfo: any;
+  private lastTick: number;
+
+  constructor(private game: GameService,
+              private inputSvc: InputService) {
+    this.lastTick = 0;
+  }
 
   ngOnInit() {
   }
@@ -70,7 +79,7 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
     const shaderProg = this.initShaderProgram();
-    const programInfo = {
+    this.programInfo = {
       program: shaderProg,
       attribLocations: {
         vertexPosition: this.gl.getAttribLocation(shaderProg, 'aVertexPosition'),
@@ -82,11 +91,25 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
       },
     };
 
-    const buffers = this.initBuffers();
-    this.draw(programInfo, buffers);
+    this.bufferInfo = this.initBuffers();
+
+    requestAnimationFrame(this.renderCallback);
   }
 
-  draw(programInfo: any, buffers: any) {
+  // need a lambda in order to retain reference to this object
+  renderCallback = (now: number) => {
+    this.tick(now);
+    requestAnimationFrame(this.renderCallback);
+  }
+
+  tick(now: number) {
+    const deltaMs = now - this.lastTick;
+
+    this.game.update(deltaMs);
+    this.draw();
+  }
+
+  draw() {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
     const fov = 45 * Math.PI / 180; // 45 degree fov
@@ -98,7 +121,10 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
     mat4.perspective(projectionMatrix, fov, aspect, zNear, zFar);
 
     const modelViewMatrix = mat4.create();
-    mat4.translate(modelViewMatrix, modelViewMatrix, [-0.0, 0.0, -6.0]);
+    mat4.translate(modelViewMatrix, modelViewMatrix,
+      [this.game.player.pos.xpos,
+          -this.game.player.pos.ypos,
+          -100.0]);
 
     {
       const numComponents = 2;
@@ -106,15 +132,15 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
       const normalize = false;
       const stride = 0;
       const offset = 0;
-      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffers.position);
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.bufferInfo.position);
       this.gl.vertexAttribPointer(
-        programInfo.attribLocations.vertexPosition,
+        this.programInfo.attribLocations.vertexPosition,
         numComponents,
         type,
         normalize,
         stride,
         offset);
-      this.gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
+      this.gl.enableVertexAttribArray(this.programInfo.attribLocations.vertexPosition);
     }
 
     {
@@ -123,21 +149,21 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
       const normalize = false;
       const stride = 0;
       const offset = 0;
-      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffers.color);
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.bufferInfo.color);
       this.gl.vertexAttribPointer(
-        programInfo.attribLocations.vertexColor,
+        this.programInfo.attribLocations.vertexColor,
         numComponents,
         type,
         normalize,
         stride,
         offset);
       this.gl.enableVertexAttribArray(
-        programInfo.attribLocations.vertexColor);
+        this.programInfo.attribLocations.vertexColor);
     }
 
-    this.gl.useProgram(programInfo.program);
-    this.gl.uniformMatrix4fv(programInfo.uniformLocations.projectionMatrix, false, projectionMatrix);
-    this.gl.uniformMatrix4fv(programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
+    this.gl.useProgram(this.programInfo.program);
+    this.gl.uniformMatrix4fv(this.programInfo.uniformLocations.projectionMatrix, false, projectionMatrix);
+    this.gl.uniformMatrix4fv(this.programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
 
     {
       const offset = 0;
