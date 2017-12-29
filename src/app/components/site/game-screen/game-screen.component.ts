@@ -52,9 +52,13 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
     0.0,  0.0,  1.0,  1.0,
   ];
 
+  private projectionMatrix: mat4;
+  private modelViewMatrix: mat4;
+
   private programInfo: any;
-  private bufferInfo: any;
   private lastTick: number;
+
+  private vertBuffer: number[];
 
   constructor(private game: GameService,
               private inputSvc: InputService) {
@@ -91,7 +95,7 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
       },
     };
 
-    this.bufferInfo = this.initBuffers();
+    this.setupView();
 
     requestAnimationFrame(this.renderCallback);
   }
@@ -106,10 +110,15 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
     const deltaMs = now - this.lastTick;
 
     this.game.update(deltaMs);
-    this.draw();
+    this.drawScene();
   }
 
-  draw() {
+  drawScene() {
+    this.updateVertices();
+    this.doDraw();
+  }
+
+  setupView() {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
     const fov = 45 * Math.PI / 180; // 45 degree fov
@@ -117,14 +126,17 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
     const zNear = 0.1;
     const zFar = 100.0;
 
-    const projectionMatrix = mat4.create();
-    mat4.perspective(projectionMatrix, fov, aspect, zNear, zFar);
+    this.projectionMatrix = mat4.create();
+    mat4.perspective(this.projectionMatrix, fov, aspect, zNear, zFar);
+  }
 
-    const modelViewMatrix = mat4.create();
-    mat4.translate(modelViewMatrix, modelViewMatrix,
-      [this.game.player.pos.xpos,
-          -this.game.player.pos.ypos,
-          -100.0]);
+  updateVertices() {
+    // TODO should be udating instead of recreating
+    this.modelViewMatrix = mat4.create();
+    mat4.translate(this.modelViewMatrix, this.modelViewMatrix,
+      [-this.game.player.pos.xpos,
+        this.game.player.pos.ypos,
+        -100.0]);
 
     {
       const numComponents = 2;
@@ -160,10 +172,12 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
       this.gl.enableVertexAttribArray(
         this.programInfo.attribLocations.vertexColor);
     }
+  }
 
+  doDraw() {
     this.gl.useProgram(this.programInfo.program);
-    this.gl.uniformMatrix4fv(this.programInfo.uniformLocations.projectionMatrix, false, projectionMatrix);
-    this.gl.uniformMatrix4fv(this.programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
+    this.gl.uniformMatrix4fv(this.programInfo.uniformLocations.projectionMatrix, false, this.projectionMatrix);
+    this.gl.uniformMatrix4fv(this.programInfo.uniformLocations.modelViewMatrix, false, this.modelViewMatrix);
 
     {
       const offset = 0;
