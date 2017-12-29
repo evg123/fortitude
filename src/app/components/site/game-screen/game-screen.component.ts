@@ -4,6 +4,7 @@ import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/
 import {mat4} from 'gl-matrix';
 import {GameService} from '../../../services/game.service.client';
 import {InputService} from '../../../services/input.service.client';
+import {Const} from '../../../constants';
 
 @Component({
   selector: 'app-game-screen',
@@ -38,27 +39,11 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
     }
   `;
 
-  sqr_pos_array = [
-    1.0,  1.0,
-    -1.0,  1.0,
-    1.0, -1.0,
-    -1.0, -1.0,
-  ];
-
-  sqr_col_array = [
-    1.0,  1.0,  1.0,  1.0,
-    1.0,  0.0,  0.0,  1.0,
-    0.0,  1.0,  0.0,  1.0,
-    0.0,  0.0,  1.0,  1.0,
-  ];
-
   private projectionMatrix: mat4;
   private modelViewMatrix: mat4;
 
   private programInfo: any;
   private lastTick: number;
-
-  private vertBuffer: number[];
 
   constructor(private game: GameService,
               private inputSvc: InputService) {
@@ -131,20 +116,22 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
   }
 
   updateVertices() {
-    // TODO should be udating instead of recreating
+    // TODO should be updating instead of recreating
     this.modelViewMatrix = mat4.create();
     mat4.translate(this.modelViewMatrix, this.modelViewMatrix,
       [-this.game.player.pos.xpos,
         this.game.player.pos.ypos,
         -100.0]);
 
+    const buffer = this.updateBuffers();
+
     {
-      const numComponents = 2;
+      const numComponents = Const.VERT_COUNT;
       const type = this.gl.FLOAT;
       const normalize = false;
-      const stride = 0;
-      const offset = 0;
-      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.bufferInfo.position);
+      const stride = Const.COLOR_COUNT * Const.COLOR_SIZE;
+      const offset = Const.VERT_OFFSET;
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
       this.gl.vertexAttribPointer(
         this.programInfo.attribLocations.vertexPosition,
         numComponents,
@@ -156,12 +143,12 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
     }
 
     {
-      const numComponents = 4;
+      const numComponents = Const.COLOR_COUNT;
       const type = this.gl.FLOAT;
       const normalize = false;
-      const stride = 0;
-      const offset = 0;
-      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.bufferInfo.color);
+      const stride = Const.VERT_COUNT * Const.VERT_SIZE;
+      const offset = Const.COLOR_OFFSET;
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
       this.gl.vertexAttribPointer(
         this.programInfo.attribLocations.vertexColor,
         numComponents,
@@ -216,20 +203,21 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
     return shader;
   }
 
-  initBuffers() {
-    const posBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, posBuffer);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.sqr_pos_array), this.gl.STATIC_DRAW);
+  updateBuffers() {
+    // build an array of positions/colors
+    const vertInfo: number[] = [];
+    for (const obj of this.game.getDrawList()) {
+      for (const item of obj.getVertInfo()) {
+        vertInfo.push(item);
+      }
+    }
 
-    const colBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colBuffer);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.sqr_col_array), this.gl.STATIC_DRAW);
-
-    const bufferObj = {
-      position: posBuffer,
-      color: colBuffer,
-    };
-    return bufferObj;
+    // upload array to gpu buffer
+    const buffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertInfo), this.gl.STATIC_DRAW);
+    console.log(vertInfo);
+    return buffer;
   }
 
 }

@@ -20,6 +20,7 @@ export class Entity extends Drawable {
   }
 
   update(delta: number) {
+    super.update(delta);
     this.pos.xpos += this.xDir;
     this.pos.ypos += this.yDir;
   }
