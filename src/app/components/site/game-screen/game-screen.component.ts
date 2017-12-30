@@ -41,6 +41,7 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
 
   private projectionMatrix: mat4;
   private modelViewMatrix: mat4;
+  private buffer: WebGLBuffer;
 
   private programInfo: any;
   private lastTick: number;
@@ -104,8 +105,6 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
   }
 
   setupView() {
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-
     const fov = 45 * Math.PI / 180; // 45 degree fov
     const aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
     const zNear = 0.1;
@@ -113,6 +112,8 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
 
     this.projectionMatrix = mat4.create();
     mat4.perspective(this.projectionMatrix, fov, aspect, zNear, zFar);
+
+    this.buffer = this.initBuffers();
   }
 
   updateVertices() {
@@ -123,15 +124,15 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
         this.game.player.pos.ypos,
         -100.0]);
 
-    const buffer = this.updateBuffers();
+    this.updateBuffers();
 
     {
       const numComponents = Const.VERT_COUNT;
       const type = this.gl.FLOAT;
       const normalize = false;
-      const stride = Const.COLOR_COUNT * Const.COLOR_SIZE;
+      const stride = Const.VERT_STRIDE;
       const offset = Const.VERT_OFFSET;
-      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffer);
       this.gl.vertexAttribPointer(
         this.programInfo.attribLocations.vertexPosition,
         numComponents,
@@ -146,9 +147,9 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
       const numComponents = Const.COLOR_COUNT;
       const type = this.gl.FLOAT;
       const normalize = false;
-      const stride = Const.VERT_COUNT * Const.VERT_SIZE;
+      const stride = Const.VERT_STRIDE;
       const offset = Const.COLOR_OFFSET;
-      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.buffer);
       this.gl.vertexAttribPointer(
         this.programInfo.attribLocations.vertexColor,
         numComponents,
@@ -162,6 +163,7 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
   }
 
   doDraw() {
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     this.gl.useProgram(this.programInfo.program);
     this.gl.uniformMatrix4fv(this.programInfo.uniformLocations.projectionMatrix, false, this.projectionMatrix);
     this.gl.uniformMatrix4fv(this.programInfo.uniformLocations.modelViewMatrix, false, this.modelViewMatrix);
@@ -203,6 +205,13 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
     return shader;
   }
 
+  initBuffers() {
+    const buffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, Const.INITIAL_VERT_BUFFER_SIZE, this.gl.DYNAMIC_DRAW);
+    return buffer;
+  }
+
   updateBuffers() {
     // build an array of positions/colors
     const vertInfo: number[] = [];
@@ -213,11 +222,7 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
     }
 
     // upload array to gpu buffer
-    const buffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertInfo), this.gl.STATIC_DRAW);
-    console.log(vertInfo);
-    return buffer;
+    this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, new Float32Array(vertInfo));
   }
 
 }

@@ -4,13 +4,17 @@
 
 // generic constants
 export class Const {
-  static readonly VERT_SIZE = 32; // TODO dont need to be floats
+  static readonly INITIAL_VERT_BUFFER_SIZE = 1024;
+
+  static readonly VERT_SIZE = 4; // TODO dont need to be floats
   static readonly VERT_COUNT = 2;
   static readonly VERT_OFFSET = 0;
 
-  static readonly COLOR_SIZE = 32; // TODO dont need to be floats
+  static readonly COLOR_SIZE = 4; // TODO dont need to be floats
   static readonly COLOR_COUNT = 4;
   static readonly COLOR_OFFSET = Const.VERT_COUNT * Const.VERT_SIZE;
+
+  static readonly VERT_STRIDE = Const.VERT_COUNT * Const.VERT_SIZE + Const.COLOR_COUNT * Const.COLOR_SIZE;
 }
 
 // mapping from function to keyboard/mouse event
