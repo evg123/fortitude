@@ -81,11 +81,12 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
       },
     };
 
+    this.game.setupWorld();
     this.setupView();
+    this.setupVertices();
 
     requestAnimationFrame(this.renderCallback);
   }
-
   // need a lambda in order to retain reference to this object
   renderCallback = (now: number) => {
     this.tick(now);
@@ -100,7 +101,6 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
   }
 
   drawScene() {
-    this.updateVertices();
     this.doDraw();
   }
 
@@ -116,16 +116,7 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
     this.buffer = this.initBuffers();
   }
 
-  updateVertices() {
-    // TODO should be updating instead of recreating
-    this.modelViewMatrix = mat4.create();
-    mat4.translate(this.modelViewMatrix, this.modelViewMatrix,
-      [-this.game.player.pos.xpos,
-        this.game.player.pos.ypos,
-        -100.0]);
-
-    this.updateBuffers();
-
+  setupVertices() {
     {
       const numComponents = Const.VERT_COUNT;
       const type = this.gl.FLOAT;
@@ -160,19 +151,27 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
       this.gl.enableVertexAttribArray(
         this.programInfo.attribLocations.vertexColor);
     }
+
+    this.gl.useProgram(this.programInfo.program);
+  }
+
+  updateView() {
+    // TODO should be updating instead of recreating
+    this.modelViewMatrix = mat4.create();
+    mat4.translate(this.modelViewMatrix, this.modelViewMatrix,
+      [-this.game.player.pos.xpos,
+        this.game.player.pos.ypos,
+        -100.0]);
+    this.gl.uniformMatrix4fv(this.programInfo.uniformLocations.projectionMatrix, false, this.projectionMatrix);
+    this.gl.uniformMatrix4fv(this.programInfo.uniformLocations.modelViewMatrix, false, this.modelViewMatrix);
   }
 
   doDraw() {
+    const vertCount = this.updateBuffers();
+    console.log(vertCount);
+    this.updateView();
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-    this.gl.useProgram(this.programInfo.program);
-    this.gl.uniformMatrix4fv(this.programInfo.uniformLocations.projectionMatrix, false, this.projectionMatrix);
-    this.gl.uniformMatrix4fv(this.programInfo.uniformLocations.modelViewMatrix, false, this.modelViewMatrix);
-
-    {
-      const offset = 0;
-      const vertexCount = 4;
-      this.gl.drawArrays(this.gl.TRIANGLE_STRIP, offset, vertexCount);
-    }
+    this.gl.drawArrays(this.gl.TRIANGLES, 0, vertCount);
   }
 
   initShaderProgram() {
@@ -223,6 +222,7 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
 
     // upload array to gpu buffer
     this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, new Float32Array(vertInfo));
+    return vertInfo.length / Const.VERT_ELEMENTS;
   }
 
 }

@@ -5,6 +5,7 @@
 // generic constants
 export class Const {
   static readonly INITIAL_VERT_BUFFER_SIZE = 1024;
+  static readonly VERT_ELEMENTS = 6;
 
   static readonly VERT_SIZE = 4; // TODO dont need to be floats
   static readonly VERT_COUNT = 2;
@@ -33,7 +34,9 @@ export class Shapes {
     1.0,  1.0, 1.0, 1.0, 1.0, 1.0,
     -1.0,  1.0, 1.0, 0.0, 0.0, 1.0,
     1.0, -1.0, 0.0, 1.0, 0.0, 1.0,
+    1.0, -1.0, 0.0, 1.0, 0.0, 1.0,
     -1.0, -1.0, 0.0, 0.0, 1.0, 1.0,
+    -1.0,  1.0, 1.0, 0.0, 0.0, 1.0,
   ];
 }
 

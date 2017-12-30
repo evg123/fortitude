@@ -4,6 +4,7 @@ import 'rxjs/Rx';
 import {environment} from '../../environments/environment';
 import {Player} from '../model/player';
 import {Drawable} from '../model/drawable';
+import {NPC} from '../model/npc';
 
 @Injectable()
 export class GameService {
@@ -25,5 +26,11 @@ export class GameService {
     for (const obj of this.drawList) {
       obj.update(delta);
     }
+  }
+
+  setupWorld() {
+    const npc1 = new NPC();
+    npc1.pos.move(4, 4);
+    this.drawList.push(npc1);
   }
 }

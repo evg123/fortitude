@@ -31,4 +31,14 @@ export class Rect {
   right() {
     return this.xpos + this.width / 2;
   }
+
+  move(xpos: number, ypos: number) {
+    this.xpos = xpos;
+    this.ypos = ypos;
+  }
+
+  resize(width: number, height: number) {
+    this.width = width;
+    this.height = height;
+  }
 }
