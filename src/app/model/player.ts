@@ -44,9 +44,9 @@ export class Player extends Being {
 
   updateDirection() {
     if (this.movingUp && !this.movingDown) {
-      this.yDir = -1;
-    } else if (!this.movingUp && this.movingDown) {
       this.yDir = 1;
+    } else if (!this.movingUp && this.movingDown) {
+      this.yDir = -1;
     } else {
       this.yDir = 0;
     }

@@ -160,7 +160,7 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
     this.modelViewMatrix = mat4.create();
     mat4.translate(this.modelViewMatrix, this.modelViewMatrix,
       [-this.game.player.pos.xpos,
-        this.game.player.pos.ypos,
+        -this.game.player.pos.ypos,
         -100.0]);
     this.gl.uniformMatrix4fv(this.programInfo.uniformLocations.projectionMatrix, false, this.projectionMatrix);
     this.gl.uniformMatrix4fv(this.programInfo.uniformLocations.modelViewMatrix, false, this.modelViewMatrix);
@@ -168,7 +168,6 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
 
   doDraw() {
     const vertCount = this.updateBuffers();
-    console.log(vertCount);
     this.updateView();
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     this.gl.drawArrays(this.gl.TRIANGLES, 0, vertCount);
