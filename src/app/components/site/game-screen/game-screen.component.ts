@@ -62,6 +62,13 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
       return;
     }
 
+    // update canvas size
+    const canvasRect = this.canvas.nativeElement.getBoundingClientRect();
+    this.game.canvasLeft = canvasRect.left;
+    this.game.canvasTop = canvasRect.top;
+    this.game.canvasWidth = this.gl.canvas.clientWidth;
+    this.game.canvasHeight = this.gl.canvas.clientHeight;
+
     this.gl.clearColor(1.0, 1.0, 1.0, 1.0);
     this.gl.clearDepth(1.0);
     this.gl.enable(this.gl.DEPTH_TEST);
@@ -105,13 +112,17 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
   }
 
   setupView() {
-    const fov = 45 * Math.PI / 180; // 45 degree fov
+    const fov = 53 * Math.PI / 180; // not sure why 53 works here...
     const aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
     const zNear = 0.1;
-    const zFar = 100.0;
+    const zFar = 1000.0;
 
+    // create a projection matrix
     this.projectionMatrix = mat4.create();
     mat4.perspective(this.projectionMatrix, fov, aspect, zNear, zFar);
+
+    // flip the y axis so it matches drawing conventions
+    mat4.scale(this.projectionMatrix, this.projectionMatrix, [1.0, -1.0, 1.0]);
 
     this.buffer = this.initBuffers();
   }
@@ -161,7 +172,7 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
     mat4.translate(this.modelViewMatrix, this.modelViewMatrix,
       [-this.game.player.pos.xpos,
         -this.game.player.pos.ypos,
-        -100.0]);
+        -this.game.zoomScale]);
     this.gl.uniformMatrix4fv(this.programInfo.uniformLocations.projectionMatrix, false, this.projectionMatrix);
     this.gl.uniformMatrix4fv(this.programInfo.uniformLocations.modelViewMatrix, false, this.modelViewMatrix);
   }
@@ -204,6 +215,7 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
   }
 
   initBuffers() {
+    // TODO this buffer should be sized dynamically
     const buffer = this.gl.createBuffer();
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
     this.gl.bufferData(this.gl.ARRAY_BUFFER, Const.INITIAL_VERT_BUFFER_SIZE, this.gl.DYNAMIC_DRAW);

@@ -14,6 +14,23 @@ export class InputService {
     keyboardjs.bind(Keys.RIGHT, this.rightPressed, this.rightUnPressed);
   }
 
+  eventPosToWorldPos(evX: number, evY: number) {
+    // TODO save some of these calculations to optimize
+    // TODO this is pretty hacky currently
+    // get canvas-relative position
+    let newX = evX - this.game.canvasLeft - (this.game.canvasWidth / 2);
+    let newY = evY - this.game.canvasTop - (this.game.canvasHeight / 2);
+
+    // adjust for aspect ratio
+    const aspect = this.game.canvasWidth / this.game.canvasHeight;
+    newX *= aspect;
+
+    // translate to world position
+    newX = this.game.zoomScale * (newX / this.game.canvasWidth) + this.game.player.pos.xpos;
+    newY = this.game.zoomScale * (newY / this.game.canvasHeight) + this.game.player.pos.ypos;
+    return [newX, newY];
+  }
+
   upPressed = (event: KeyEvent) => {
     // event.preventRepeat();
     this.game.player.setMovingUp(true);
@@ -71,6 +88,8 @@ export class InputService {
   }
 
   mouseMove(event: MouseEvent) {
-    this.game.player.setHandPos(event.clientX, event.clientY);
+    const [mouseX, mouseY] = this.eventPosToWorldPos(event.clientX, event.clientY);
+    console.log(mouseX, mouseY);
+    this.game.player.setHandPos(mouseX, mouseY);
   }
 }
