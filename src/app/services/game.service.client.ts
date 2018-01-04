@@ -37,47 +37,47 @@ export class GameService {
   setupWorld() {
     this.player = new Player();
     this.drawList.push(this.player);
-    this.player.pos.move(1000, 1000);
+    this.player.pos.moveAbs(1000, 1000);
 
     {
       const npc = new NPC();
-      npc.pos.move(4, 4);
+      npc.pos.moveAbs(4, 4);
       this.drawList.push(npc);
     }
 
     {
       const block = new Block();
-      block.pos.move(995.5, 1002);
+      block.pos.moveAbs(995.5, 1002);
       this.drawList.push(block);
     }
     {
       const block = new Block();
-      block.pos.move(997.5, 1002);
+      block.pos.moveAbs(997.5, 1002);
       this.drawList.push(block);
     }
     {
       const block = new Block();
-      block.pos.move(999.5, 1002);
+      block.pos.moveAbs(999.5, 1002);
       this.drawList.push(block);
     }
     {
       const block = new Block();
-      block.pos.move(1001.5, 1002);
+      block.pos.moveAbs(1001.5, 1002);
       this.drawList.push(block);
     }
     {
       const block = new Block();
-      block.pos.move(1003.5, 1002);
+      block.pos.moveAbs(1003.5, 1002);
       this.drawList.push(block);
     }
     {
       const block = new Block();
-      block.pos.move(1005.5, 1002);
+      block.pos.moveAbs(1005.5, 1002);
       this.drawList.push(block);
     }
     {
       const block = new Block();
-      block.pos.move(1020, 1025);
+      block.pos.moveAbs(1020, 1025);
       this.drawList.push(block);
     }
   }
@@ -89,7 +89,6 @@ export class GameService {
         objList.push(obj);
       }
     }
-    console.log(objList);
     return objList;
   }
 }

@@ -2,7 +2,7 @@
   Something that can be drawn to the screen
  */
 
-import {Rect} from './Rect';
+import {Rect} from './rect';
 import {Colors, Const, Shapes} from '../constants';
 
 export abstract class Drawable {

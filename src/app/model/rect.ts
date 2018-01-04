@@ -32,9 +32,14 @@ export class Rect {
     return this.xpos + this.width / 2;
   }
 
-  move(xpos: number, ypos: number) {
+  moveAbs(xpos: number, ypos: number) {
     this.xpos = xpos;
     this.ypos = ypos;
+  }
+
+  moveOff(xpos: number, ypos: number) {
+    this.xpos += xpos;
+    this.ypos += ypos;
   }
 
   resize(width: number, height: number) {
@@ -43,7 +48,8 @@ export class Rect {
   }
 
   contains(xp: number, yp: number) {
+    console.log([xp, yp, this.left(), this.right(), this.bot(), this.top()]);
     return !(xp < this.left() || xp > this.right()
-      || yp < this.bot() || yp > this.top());
+      || yp > this.bot() || yp < this.top());
   }
 }

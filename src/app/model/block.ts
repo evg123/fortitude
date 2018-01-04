@@ -3,7 +3,7 @@
  */
 
 import {Being} from './being';
-import {Rect} from './Rect';
+import {Rect} from './rect';
 import {Entity} from './entity';
 
 export class Block extends Entity {
@@ -26,5 +26,10 @@ export class Block extends Entity {
 
   update(delta: number) {
     super.update(delta);
+  }
+
+  use() {
+    // just drop where this block is currently placed
+    return true;
   }
 }

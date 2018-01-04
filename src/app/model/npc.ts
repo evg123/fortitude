@@ -3,7 +3,7 @@
  */
 
 import {Being} from './being';
-import {Rect} from './Rect';
+import {Rect} from './rect';
 
 export class NPC extends Being {
 

@@ -75,7 +75,8 @@ export class InputService {
     if (this.game.player.isHolding()) {
       this.game.player.useHeld();
     } else {
-      const objsAtMouse = this.game.getObjsAtPos(event.clientX, event.clientY);
+      const [mouseX, mouseY] = this.eventPosToWorldPos(event.clientX, event.clientY);
+      const objsAtMouse = this.game.getObjsAtPos(mouseX, mouseY);
       for (const obj of objsAtMouse) {
         const grabbed = this.game.player.grab(obj);
         if (grabbed) {

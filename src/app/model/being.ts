@@ -4,7 +4,7 @@
  */
 
 import {Entity} from './entity';
-import {Rect} from './Rect';
+import {Rect} from './rect';
 
 export abstract class Being extends Entity {
 
@@ -43,7 +43,14 @@ export abstract class Being extends Entity {
 
   setHandPos(px: number, py: number) {
     if (this.isHolding()) {
-      this.held.pos.move(px, py);
+      this.held.pos.moveAbs(px, py);
+    }
+  }
+
+  updateHeldDir(dx: number, dy: number) {
+    if (this.isHolding()) {
+      this.held.xDir = dx;
+      this.held.yDir = dy;
     }
   }
 
@@ -52,5 +59,13 @@ export abstract class Being extends Entity {
     if (drop) {
       delete this.held;
     }
+  }
+
+  doMove() {
+    const [xOff, yOff] = super.doMove();
+    if (this.isHolding()) {
+      this.held.pos.moveOff(xOff, yOff);
+    }
+    return [xOff, yOff];
   }
 }

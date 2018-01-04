@@ -5,7 +5,7 @@
  */
 
 import {Drawable} from './drawable';
-import {Rect} from './Rect';
+import {Rect} from './rect';
 
 export class Entity extends Drawable {
 
@@ -21,9 +21,21 @@ export class Entity extends Drawable {
     this.speed = speed;
   }
 
+  static normalize(xd: number, yd: number) {
+    if (xd === 0 && yd === 0) {
+      return [0, 0];
+    }
+    const base = Math.sqrt(xd * xd + yd * yd);
+    return [xd / base, yd / base];
+  }
+
   doMove() {
-    this.pos.xpos += this.xDir;
-    this.pos.ypos += this.yDir;
+    let [xOff, yOff] = Entity.normalize(this.xDir, this.yDir);
+    xOff *= this.speed;
+    yOff *= this.speed;
+    this.pos.xpos += xOff;
+    this.pos.ypos += yOff;
+    return [xOff, yOff];
   }
 
   update(delta: number) {
