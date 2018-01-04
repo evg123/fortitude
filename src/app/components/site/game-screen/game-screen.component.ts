@@ -224,4 +224,11 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
     return vertInfo.length / Const.VERT_ELEMENTS;
   }
 
+  mouseUp(event: MouseEvent) {
+    this.inputSvc.mouseUp(event);
+  }
+
+  mouseMove(event: MouseEvent) {
+    this.inputSvc.mouseMove(event);
+  }
 }

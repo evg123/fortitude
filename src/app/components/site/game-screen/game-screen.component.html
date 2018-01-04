@@ -1,5 +1,5 @@
 <div class="frt-play-bg">
-  <div class="container">
+  <div class="container" (mousemove)="mouseMove($event)" (mouseup)="mouseUp($event)">
     <canvas
       #glCanvas
       width="1280"

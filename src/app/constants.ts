@@ -24,8 +24,6 @@ export class Keys {
   static readonly DOWN = 's';
   static readonly LEFT = 'a';
   static readonly RIGHT = 'd';
-
-  static readonly GRAB = 'click';
 }
 
 // shape vertex arrays

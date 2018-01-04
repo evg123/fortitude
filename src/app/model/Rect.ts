@@ -41,4 +41,9 @@ export class Rect {
     this.width = width;
     this.height = height;
   }
+
+  contains(xp: number, yp: number) {
+    return !(xp < this.left() || xp > this.right()
+      || yp < this.bot() || yp > this.top());
+  }
 }

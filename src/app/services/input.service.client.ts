@@ -53,4 +53,24 @@ export class InputService {
     // event.preventRepeat();
     this.game.player.setMovingRight(false);
   }
+
+  mouseUp(event: MouseEvent) {
+    if (this.game.player.isHolding()) {
+      this.game.player.useHeld();
+    } else {
+      const objsAtMouse = this.game.getObjsAtPos(event.clientX, event.clientY);
+      for (const obj of objsAtMouse) {
+        const grabbed = this.game.player.grab(obj);
+        if (grabbed) {
+          // grab succeeded, we're done
+          // TODO make this deterministic, rather than dependant on order of list
+          return;
+        }
+      }
+    }
+  }
+
+  mouseMove(event: MouseEvent) {
+    this.game.player.setHandPos(event.clientX, event.clientY);
+  }
 }

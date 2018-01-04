@@ -27,10 +27,22 @@ export abstract class Drawable {
     return this.vertInfo;
   }
 
+  setColor(red: number, green: number, blue: number, alpha: number) {
+    for (let vi = 0; vi < this.vertInfo.length; vi += Const.VERT_ELEMENTS) {
+      this.vertInfo[vi + 2] = red;
+      this.vertInfo[vi + 3] = green;
+      this.vertInfo[vi + 4] = blue;
+      this.vertInfo[vi + 5] = alpha;
+    }
+  }
+
   update(delta: number) {
+    this.doMove();
     this.updateVertInfo();
     return;
   }
+
+  doMove() { }
 
   updateVertInfo() {
     // update vert info to match the position of the pos Rect

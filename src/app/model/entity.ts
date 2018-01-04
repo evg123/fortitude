@@ -12,16 +12,28 @@ export class Entity extends Drawable {
   // x and y direction, will be normalized before converting to velocity
   xDir = 0;
   yDir = 0;
+  facing = 0;
   speed: number;
+  holdable = false;
 
   constructor(pos: Rect, speed: number) {
     super(pos);
     this.speed = speed;
   }
 
-  update(delta: number) {
+  doMove() {
     this.pos.xpos += this.xDir;
     this.pos.ypos += this.yDir;
+  }
+
+  update(delta: number) {
     super.update(delta);
+  }
+
+  // a being has used this entity
+  // return true if object should be removed from inventory after use
+  use() {
+    // do nothing by default
+    return false;
   }
 }
