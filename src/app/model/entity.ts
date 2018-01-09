@@ -6,6 +6,8 @@
 
 import {Drawable} from './drawable';
 import {Rect} from './rect';
+import {Common} from '../common';
+import {GameService} from '../services/game.service.client';
 
 export class Entity extends Drawable {
 
@@ -15,26 +17,24 @@ export class Entity extends Drawable {
   facing = 0;
   speed: number;
   holdable = false;
+  interactive = true; // collision with this object might have an effect
+  collidable = false; // collision with this object will impede movement
 
   constructor(pos: Rect, speed: number) {
     super(pos);
     this.speed = speed;
   }
 
-  static normalize(xd: number, yd: number) {
-    if (xd === 0 && yd === 0) {
-      return [0, 0];
-    }
-    const base = Math.sqrt(xd * xd + yd * yd);
-    return [xd / base, yd / base];
-  }
+
 
   doMove() {
-    let [xOff, yOff] = Entity.normalize(this.xDir, this.yDir);
+    let [xOff, yOff] = Common.normalize(this.xDir, this.yDir);
     xOff *= this.speed;
     yOff *= this.speed;
-    this.pos.xpos += xOff;
-    this.pos.ypos += yOff;
+    if (this.interactive) {
+      [xOff, yOff] = Entity.game.tryMove(this, xOff, yOff);
+    }
+    this.pos.moveOff(xOff, yOff);
     return [xOff, yOff];
   }
 
@@ -46,6 +46,11 @@ export class Entity extends Drawable {
   // return true if object should be removed from inventory after use
   use() {
     // do nothing by default
+    return false;
+  }
+
+  // return true if object should be deleted
+  collide(other: Entity) {
     return false;
   }
 }

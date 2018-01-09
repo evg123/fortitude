@@ -7,6 +7,8 @@ import {Drawable} from '../model/drawable';
 import {NPC} from '../model/npc';
 import {Block} from '../model/block';
 import {Const} from '../constants';
+import {Rect} from '../model/rect';
+import {Entity} from '../model/entity';
 
 @Injectable()
 export class GameService {
@@ -19,76 +21,157 @@ export class GameService {
   canvasHeight = 0;
   zoomScale = Const.DEFAULT_ZOOM;
 
-  private drawList: Drawable[] = [];
+  // things that do not move
+  private staticDrawList: Drawable[] = [];
+
+  // things that move
+  private entList: Entity[] = [];
   player: Player;
+
+  // collisions that have occurred since the last time time they were handled
+  private pendingCollisions = {};
+
+  // ids of entities that need to be removed from the draw list
+  private toRemove: number[] = [];
 
   constructor(private _http: Http) { }
 
   getDrawList() {
-    return this.drawList;
+    return this.entList;
   }
 
   update(delta: number) {
-    for (const obj of this.drawList) {
+    for (const obj of this.entList) {
       obj.update(delta);
     }
+    this.handleCollisions();
+    this.handleRemove();
   }
 
   setupWorld() {
     this.player = new Player();
-    this.drawList.push(this.player);
+    this.entList.push(this.player);
     this.player.pos.moveAbs(1000, 1000);
 
     {
       const npc = new NPC();
       npc.pos.moveAbs(4, 4);
-      this.drawList.push(npc);
+      this.entList.push(npc);
     }
 
     {
       const block = new Block();
       block.pos.moveAbs(995.5, 1002);
-      this.drawList.push(block);
+      this.entList.push(block);
     }
     {
       const block = new Block();
       block.pos.moveAbs(997.5, 1002);
-      this.drawList.push(block);
+      this.entList.push(block);
     }
     {
       const block = new Block();
       block.pos.moveAbs(999.5, 1002);
-      this.drawList.push(block);
+      this.entList.push(block);
     }
     {
       const block = new Block();
       block.pos.moveAbs(1001.5, 1002);
-      this.drawList.push(block);
+      this.entList.push(block);
     }
     {
       const block = new Block();
       block.pos.moveAbs(1003.5, 1002);
-      this.drawList.push(block);
+      this.entList.push(block);
     }
     {
       const block = new Block();
       block.pos.moveAbs(1005.5, 1002);
-      this.drawList.push(block);
+      this.entList.push(block);
     }
     {
       const block = new Block();
       block.pos.moveAbs(1020, 1025);
-      this.drawList.push(block);
+      this.entList.push(block);
     }
   }
 
   getObjsAtPos(xp: number, yp: number) {
     const objList = [];
-    for (const obj of this.drawList) {
+    for (const obj of this.entList) {
       if (obj.pos.contains(xp, yp)) {
         objList.push(obj);
       }
     }
     return objList;
+  }
+
+  // see if ent can move by offsets without hitting something
+  // return the distance it can actually move
+  tryMove(ent: Entity, xOff: number, yOff: number) {
+    let newXOff = xOff;
+    let newYOff = yOff;
+    for (const other of this.entList) {
+      if (other.interactive && ent.pos.collidesWith(other.pos)) {
+        // a collision occurred
+        if (other.collidable && ent.collidable) {
+          // x axis
+          if (xOff > 0) {
+            const xDiff = other.pos.left() - ent.pos.right();
+            newXOff = Math.min(xOff, xDiff);
+          } else if (xOff < 0) {
+            const xDiff = other.pos.right() - ent.pos.left();
+            newXOff = Math.min(xOff, xDiff);
+          }
+
+          // y axis
+          if (yOff > 0) {
+            const yDiff = other.pos.top() - ent.pos.bot();
+            newYOff = Math.min(yOff, yDiff);
+          } else if (yOff < 0) {
+            const yDiff = other.pos.bot() - ent.pos.top();
+            newYOff = Math.min(yOff, yDiff);
+          }
+        }
+
+        // record the collision to be handled later
+        this.recordCollision(ent, other);
+      }
+    }
+    return [newXOff, newYOff];
+  }
+
+  // keep track of collisions that have occurred
+  // constructs a dict of ent.objId -> array of object that have collided with ent
+  // the first element of each array is ent for convenience
+  recordCollision(ent1: Entity, ent2: Entity) {
+    if (!this.pendingCollisions.hasOwnProperty(ent1.objId)) {
+      this.pendingCollisions[ent1.objId] = [ent1];
+    }
+    this.pendingCollisions[ent1.objId].push(ent2);
+  }
+
+  handleCollisions() {
+    for (const key in this.pendingCollisions) {
+      if (this.pendingCollisions.hasOwnProperty(key)) {
+        const entArr = this.pendingCollisions[key];
+        const ent1 = entArr[0];
+        for (const ent2 of entArr) {
+          if (ent1.collide(ent2)) {
+            this.toRemove.push(ent1.objId);
+          }
+        }
+      }
+    }
+    this.pendingCollisions = {};
+  }
+
+  handleRemove() {
+    for (let idx = this.entList.length - 1; idx >= 0; idx--) {
+      const ent = this.entList[idx];
+      if (ent.objId in this.toRemove) {
+        this.entList.splice(idx, 1);
+      }
+    }
   }
 }

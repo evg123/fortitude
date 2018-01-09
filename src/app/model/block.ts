@@ -22,6 +22,7 @@ export class Block extends Entity {
     super(new Rect(0, 0, Block.BLOCK_WIDTH, Block.BLOCK_HEIGHT), Block.BLOCK_SPEED);
     this.setColor(0, 0, 0, 1);
     this.holdable = true;
+    this.collidable = true;
   }
 
   update(delta: number) {

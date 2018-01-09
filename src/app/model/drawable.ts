@@ -4,16 +4,27 @@
 
 import {Rect} from './rect';
 import {Colors, Const, Shapes} from '../constants';
+import {GameService} from '../services/game.service.client';
 
 export abstract class Drawable {
+
+  protected static game: GameService = null;
+
+  protected static nextObjId = 0;
+  objId;
 
   private shape: number[];
   private vertInfo: number[];
   pos: Rect;
 
   constructor(pos: Rect) {
+    this.objId = Drawable.nextObjId++;
     this.pos = pos;
     this.setShape(Shapes.SQUARE);
+  }
+
+  static setGameService(game: GameService) {
+    this.game = game;
   }
 
   setShape(shape: number[]) {

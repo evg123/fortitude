@@ -5,6 +5,7 @@ import {mat4} from 'gl-matrix';
 import {GameService} from '../../../services/game.service.client';
 import {InputService} from '../../../services/input.service.client';
 import {Const} from '../../../constants';
+import {Drawable} from '../../../model/drawable';
 
 @Component({
   selector: 'app-game-screen',
@@ -52,6 +53,7 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    Drawable.setGameService(this.game);
   }
 
   ngAfterViewInit() {

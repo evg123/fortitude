@@ -48,8 +48,14 @@ export class Rect {
   }
 
   contains(xp: number, yp: number) {
-    console.log([xp, yp, this.left(), this.right(), this.bot(), this.top()]);
     return !(xp < this.left() || xp > this.right()
       || yp > this.bot() || yp < this.top());
+  }
+
+  collidesWith(other: Rect) {
+    // TODO assumes axis aligned rects
+    // TODO do first pass distance filter then SAT collision
+    return (Math.abs(this.xpos - other.xpos) * 2) < (this.width + other.width) &&
+      (Math.abs(this.ypos - other.ypos) * 2) < (this.height + other.height);
   }
 }
