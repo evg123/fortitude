@@ -14,6 +14,7 @@ export abstract class Being extends Entity {
   constructor(pos: Rect, speed: number) {
     super(pos, speed);
     this.inventory = [];
+    this.collidable = true;
   }
 
   getInventory() {

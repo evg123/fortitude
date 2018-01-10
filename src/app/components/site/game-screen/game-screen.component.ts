@@ -98,7 +98,9 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
   }
   // need a lambda in order to retain reference to this object
   renderCallback = (now: number) => {
-    this.tick(now);
+    if (!this.game.paused) {
+      this.tick(now);
+    }
     requestAnimationFrame(this.renderCallback);
   }
 

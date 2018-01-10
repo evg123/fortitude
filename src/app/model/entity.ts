@@ -7,7 +7,6 @@
 import {Drawable} from './drawable';
 import {Rect} from './rect';
 import {Common} from '../common';
-import {GameService} from '../services/game.service.client';
 
 export class Entity extends Drawable {
 
@@ -25,16 +24,16 @@ export class Entity extends Drawable {
     this.speed = speed;
   }
 
-
-
   doMove() {
     let [xOff, yOff] = Common.normalize(this.xDir, this.yDir);
     xOff *= this.speed;
     yOff *= this.speed;
-    if (this.interactive) {
-      [xOff, yOff] = Entity.game.tryMove(this, xOff, yOff);
+    if (xOff || yOff) {
+      if (this.interactive) {
+        [xOff, yOff] = Entity.game.tryMove(this, xOff, yOff);
+      }
+      this.pos.moveOff(xOff, yOff);
     }
-    this.pos.moveOff(xOff, yOff);
     return [xOff, yOff];
   }
 

@@ -21,6 +21,8 @@ export class GameService {
   canvasHeight = 0;
   zoomScale = Const.DEFAULT_ZOOM;
 
+  paused = false;
+
   // things that do not move
   private staticDrawList: Drawable[] = [];
 
@@ -51,11 +53,11 @@ export class GameService {
   setupWorld() {
     this.player = new Player();
     this.entList.push(this.player);
-    this.player.pos.moveAbs(1000, 1000);
+    this.player.pos.moveAbs(993, 1000);
 
     {
       const npc = new NPC();
-      npc.pos.moveAbs(4, 4);
+      npc.pos.moveAbs(994, 990);
       this.entList.push(npc);
     }
 
@@ -66,7 +68,7 @@ export class GameService {
     }
     {
       const block = new Block();
-      block.pos.moveAbs(997.5, 1002);
+      block.pos.moveAbs(996.5, 1002.5);
       this.entList.push(block);
     }
     {
@@ -96,6 +98,11 @@ export class GameService {
     }
   }
 
+  togglePause() {
+    this.paused = !this.paused;
+    console.error('Paused: ' + this.paused);
+  }
+
   getObjsAtPos(xp: number, yp: number) {
     const objList = [];
     for (const obj of this.entList) {
@@ -112,29 +119,30 @@ export class GameService {
     let newXOff = xOff;
     let newYOff = yOff;
     for (const other of this.entList) {
-      if (other.interactive && ent.pos.collidesWith(other.pos)) {
+      if (ent !== other && other.interactive && ent.pos.collidesWith(other.pos, newXOff, newYOff)) {
         // a collision occurred
         if (other.collidable && ent.collidable) {
           // x axis
           if (xOff > 0) {
             const xDiff = other.pos.left() - ent.pos.right();
-            newXOff = Math.min(xOff, xDiff);
+            newXOff = Math.min(newXOff, xDiff);
           } else if (xOff < 0) {
             const xDiff = other.pos.right() - ent.pos.left();
-            newXOff = Math.min(xOff, xDiff);
+            newXOff = Math.max(newXOff, xDiff);
           }
 
           // y axis
           if (yOff > 0) {
             const yDiff = other.pos.top() - ent.pos.bot();
-            newYOff = Math.min(yOff, yDiff);
+            newYOff = Math.min(newYOff, yDiff);
           } else if (yOff < 0) {
             const yDiff = other.pos.bot() - ent.pos.top();
-            newYOff = Math.min(yOff, yDiff);
+            newYOff = Math.max(newYOff, yDiff);
           }
         }
 
         // record the collision to be handled later
+        // TODO its possible that a closer collision prevents this one from happening
         this.recordCollision(ent, other);
       }
     }

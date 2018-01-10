@@ -17,7 +17,7 @@ export class Const {
 
   static readonly VERT_STRIDE = Const.VERT_COUNT * Const.VERT_SIZE + Const.COLOR_COUNT * Const.COLOR_SIZE;
 
-  static readonly DEFAULT_ZOOM = 50.0;
+  static readonly DEFAULT_ZOOM = 20.0;
 }
 
 // mapping from function to keyboard/mouse event
@@ -26,6 +26,8 @@ export class Keys {
   static readonly DOWN = 's';
   static readonly LEFT = 'a';
   static readonly RIGHT = 'd';
+
+  static readonly MENU = 'esc';
 }
 
 // shape vertex arrays

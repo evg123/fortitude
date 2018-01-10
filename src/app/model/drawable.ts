@@ -29,6 +29,7 @@ export abstract class Drawable {
 
   setShape(shape: number[]) {
     this.shape = shape;
+
     // keep vertInfo the same size as shape and up to date
     this.vertInfo = this.shape.slice();
     this.updateVertInfo();
@@ -49,6 +50,7 @@ export abstract class Drawable {
 
   update(delta: number) {
     this.doMove();
+    // TODO only update on actual move
     this.updateVertInfo();
     return;
   }

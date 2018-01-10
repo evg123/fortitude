@@ -52,10 +52,12 @@ export class Rect {
       || yp > this.bot() || yp < this.top());
   }
 
-  collidesWith(other: Rect) {
+  // check for collision with other
+  // optionally pass in an x and y offset and check if the offset would cause collision
+  collidesWith(other: Rect, xOff: number = 0, yOff: number = 0) {
     // TODO assumes axis aligned rects
     // TODO do first pass distance filter then SAT collision
-    return (Math.abs(this.xpos - other.xpos) * 2) < (this.width + other.width) &&
-      (Math.abs(this.ypos - other.ypos) * 2) < (this.height + other.height);
+    return this.left() + xOff < other.right() && this.right() + xOff > other.left()
+      && this.top() + yOff < other.bot() && this.bot() + yOff > other.top();
   }
 }

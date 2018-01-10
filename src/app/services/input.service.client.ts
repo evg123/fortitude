@@ -12,6 +12,8 @@ export class InputService {
     keyboardjs.bind(Keys.DOWN, this.downPressed, this.downUnPressed);
     keyboardjs.bind(Keys.LEFT, this.leftPressed, this.leftUnPressed);
     keyboardjs.bind(Keys.RIGHT, this.rightPressed, this.rightUnPressed);
+
+    keyboardjs.bind(Keys.MENU, this.menuPressed);
   }
 
   eventPosToWorldPos(evX: number, evY: number) {
@@ -22,14 +24,41 @@ export class InputService {
     let newY = evY - this.game.canvasTop - (this.game.canvasHeight / 2);
 
     // adjust for aspect ratio
-    const aspect = this.game.canvasWidth / this.game.canvasHeight;
-    newX *= aspect;
+    newX *= (this.game.canvasWidth / this.game.canvasHeight);
 
     // translate to world position
     newX = this.game.zoomScale * (newX / this.game.canvasWidth) + this.game.player.pos.xpos;
     newY = this.game.zoomScale * (newY / this.game.canvasHeight) + this.game.player.pos.ypos;
     return [newX, newY];
   }
+
+  // mouse handling functions
+
+  mouseUp(event: MouseEvent) {
+    if (this.game.player.isHolding()) {
+      this.game.player.useHeld();
+    } else {
+      const [mouseX, mouseY] = this.eventPosToWorldPos(event.clientX, event.clientY);
+      const objsAtMouse = this.game.getObjsAtPos(mouseX, mouseY);
+      for (const obj of objsAtMouse) {
+        const grabbed = this.game.player.grab(obj);
+        if (grabbed) {
+          // grab succeeded, we're done
+          // TODO make this deterministic, rather than dependant on order of list
+          return;
+        }
+      }
+    }
+  }
+
+  mouseMove(event: MouseEvent) {
+    const [mouseX, mouseY] = this.eventPosToWorldPos(event.clientX, event.clientY);
+    // DEBUG console.log(mouseX, mouseY);
+    this.game.player.setHandPos(mouseX, mouseY);
+  }
+
+  // keyboard handling functions
+  // need to be lambdas for keyboardjs to retain this reference
 
   upPressed = (event: KeyEvent) => {
     // event.preventRepeat();
@@ -71,26 +100,8 @@ export class InputService {
     this.game.player.setMovingRight(false);
   }
 
-  mouseUp(event: MouseEvent) {
-    if (this.game.player.isHolding()) {
-      this.game.player.useHeld();
-    } else {
-      const [mouseX, mouseY] = this.eventPosToWorldPos(event.clientX, event.clientY);
-      const objsAtMouse = this.game.getObjsAtPos(mouseX, mouseY);
-      for (const obj of objsAtMouse) {
-        const grabbed = this.game.player.grab(obj);
-        if (grabbed) {
-          // grab succeeded, we're done
-          // TODO make this deterministic, rather than dependant on order of list
-          return;
-        }
-      }
-    }
+  menuPressed = (event: KeyEvent) => {
+    this.game.togglePause();
   }
 
-  mouseMove(event: MouseEvent) {
-    const [mouseX, mouseY] = this.eventPosToWorldPos(event.clientX, event.clientY);
-    console.log(mouseX, mouseY);
-    this.game.player.setHandPos(mouseX, mouseY);
-  }
 }
