@@ -17,7 +17,7 @@ export class Const {
 
   static readonly VERT_STRIDE = Const.VERT_COUNT * Const.VERT_SIZE + Const.COLOR_COUNT * Const.COLOR_SIZE;
 
-  static readonly DEFAULT_ZOOM = 20.0;
+  static readonly DEFAULT_ZOOM = 40.0;
 }
 
 // mapping from function to keyboard/mouse event

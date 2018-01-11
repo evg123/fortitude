@@ -124,19 +124,19 @@ export class GameService {
         if (other.collidable && ent.collidable) {
           // x axis
           if (xOff > 0) {
-            const xDiff = other.pos.left() - ent.pos.right();
+            const xDiff = Math.max(0, other.pos.left() - ent.pos.right());
             newXOff = Math.min(newXOff, xDiff);
           } else if (xOff < 0) {
-            const xDiff = other.pos.right() - ent.pos.left();
+            const xDiff = Math.min(0, other.pos.right() - ent.pos.left());
             newXOff = Math.max(newXOff, xDiff);
           }
 
           // y axis
           if (yOff > 0) {
-            const yDiff = other.pos.top() - ent.pos.bot();
+            const yDiff = Math.max(0, other.pos.top() - ent.pos.bot());
             newYOff = Math.min(newYOff, yDiff);
           } else if (yOff < 0) {
-            const yDiff = other.pos.bot() - ent.pos.top();
+            const yDiff = Math.min(0, other.pos.bot() - ent.pos.top());
             newYOff = Math.max(newYOff, yDiff);
           }
         }

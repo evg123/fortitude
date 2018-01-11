@@ -174,8 +174,8 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
     // TODO should be updating instead of recreating
     this.modelViewMatrix = mat4.create();
     mat4.translate(this.modelViewMatrix, this.modelViewMatrix,
-      [-this.game.player.pos.xpos,
-        -this.game.player.pos.ypos,
+      [-this.game.player.pos.xpos(),
+        -this.game.player.pos.ypos(),
         -this.game.zoomScale]);
     this.gl.uniformMatrix4fv(this.programInfo.uniformLocations.projectionMatrix, false, this.projectionMatrix);
     this.gl.uniformMatrix4fv(this.programInfo.uniformLocations.modelViewMatrix, false, this.modelViewMatrix);

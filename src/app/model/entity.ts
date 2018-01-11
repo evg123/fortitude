@@ -14,7 +14,7 @@ export class Entity extends Drawable {
   xDir = 0;
   yDir = 0;
   facing = 0;
-  speed: number;
+  speed: number; // TODO initalize instead of setting in constructor
   holdable = false;
   interactive = true; // collision with this object might have an effect
   collidable = false; // collision with this object will impede movement

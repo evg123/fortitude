@@ -9,8 +9,8 @@ export class Player extends Being {
 
   // player constants
   static readonly PLAYER_SPEED = 0.3;
-  static readonly PLAYER_WIDTH = 1;
-  static readonly PLAYER_HEIGHT = 1;
+  static readonly PLAYER_WIDTH = 2;
+  static readonly PLAYER_HEIGHT = 2;
 
   private movingUp = false;
   private movingDown = false;

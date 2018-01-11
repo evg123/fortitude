@@ -4,47 +4,71 @@
 
 export class Rect {
 
-  xpos: number;
-  ypos: number;
-  width: number;
-  height: number;
+  private _xpos: number;
+  private _ypos: number;
+  private _width: number;
+  private _height: number;
+
+  // true if the rect has changed since its owner checked on it
+  dirty = true;
 
   constructor(xpos: number, ypos: number, width: number, height: number) {
-    this.xpos = xpos;
-    this.ypos = ypos;
-    this.width = width;
-    this.height = height;
+    this._xpos = xpos;
+    this._ypos = ypos;
+    this._width = width;
+    this._height = height;
+  }
+
+  xpos() {
+    return this._xpos;
+  }
+
+  ypos() {
+    return this._ypos;
+  }
+
+  width() {
+    return this._width;
+  }
+
+  height() {
+    return this._height;
   }
 
   top() {
-    return this.ypos - this.height / 2;
+    return this._ypos - this._height / 2;
   }
 
   bot() {
-    return this.ypos + this.height / 2;
+    return this._ypos + this._height / 2;
   }
 
   left() {
-    return this.xpos - this.width / 2;
+    return this._xpos - this._width / 2;
   }
 
   right() {
-    return this.xpos + this.width / 2;
+    return this._xpos + this._width / 2;
+  }
+
+  // NOTE: this should probably only be called by the entity that own this rect
+  // don't have a good way to make it only callable by that entity.
+  setSize(width: number, height: number) {
+    this._width = width;
+    this._height = height;
+    this.dirty = true;
   }
 
   moveAbs(xpos: number, ypos: number) {
-    this.xpos = xpos;
-    this.ypos = ypos;
+    this._xpos = xpos;
+    this._ypos = ypos;
+    this.dirty = true;
   }
 
   moveOff(xpos: number, ypos: number) {
-    this.xpos += xpos;
-    this.ypos += ypos;
-  }
-
-  resize(width: number, height: number) {
-    this.width = width;
-    this.height = height;
+    this._xpos += xpos;
+    this._ypos += ypos;
+    this.dirty = true;
   }
 
   contains(xp: number, yp: number) {

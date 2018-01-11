@@ -27,8 +27,8 @@ export class InputService {
     newX *= (this.game.canvasWidth / this.game.canvasHeight);
 
     // translate to world position
-    newX = this.game.zoomScale * (newX / this.game.canvasWidth) + this.game.player.pos.xpos;
-    newY = this.game.zoomScale * (newY / this.game.canvasHeight) + this.game.player.pos.ypos;
+    newX = this.game.zoomScale * (newX / this.game.canvasWidth) + this.game.player.pos.xpos();
+    newY = this.game.zoomScale * (newY / this.game.canvasHeight) + this.game.player.pos.ypos();
     return [newX, newY];
   }
 
