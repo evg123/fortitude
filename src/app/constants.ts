@@ -28,6 +28,7 @@ export class Keys {
   static readonly RIGHT = 'd';
 
   static readonly MENU = 'esc';
+  static readonly TOGGLE_FPS = 'shift + f';
 }
 
 // shape vertex arrays

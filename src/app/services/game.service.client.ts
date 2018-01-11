@@ -22,6 +22,7 @@ export class GameService {
   zoomScale = Const.DEFAULT_ZOOM;
 
   paused = false;
+  displayFps = false;
 
   // things that do not move
   private staticDrawList: Drawable[] = [];
@@ -53,7 +54,7 @@ export class GameService {
   setupWorld() {
     this.player = new Player();
     this.entList.push(this.player);
-    this.player.pos.moveAbs(993, 1000);
+    this.player.pos.moveAbs(1000, 1000);
 
     {
       const npc = new NPC();
@@ -181,5 +182,9 @@ export class GameService {
         this.entList.splice(idx, 1);
       }
     }
+  }
+
+  toggleFpsDisplay() {
+    this.displayFps = !this.displayFps;
   }
 }

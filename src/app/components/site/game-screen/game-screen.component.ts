@@ -6,6 +6,7 @@ import {GameService} from '../../../services/game.service.client';
 import {InputService} from '../../../services/input.service.client';
 import {Const} from '../../../constants';
 import {Drawable} from '../../../model/drawable';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-game-screen',
@@ -40,6 +41,9 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
     }
   `;
 
+  renderWidth = 100;
+  renderHeight = 100;
+
   private projectionMatrix: mat4;
   private modelViewMatrix: mat4;
   private buffer: WebGLBuffer;
@@ -47,7 +51,8 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
   private programInfo: any;
   private lastTick: number;
 
-  constructor(private game: GameService,
+  constructor(private router: Router,
+              private game: GameService,
               private inputSvc: InputService) {
     this.lastTick = 0;
   }
@@ -64,12 +69,7 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    // update canvas size
-    const canvasRect = this.canvas.nativeElement.getBoundingClientRect();
-    this.game.canvasLeft = canvasRect.left;
-    this.game.canvasTop = canvasRect.top;
-    this.game.canvasWidth = this.gl.canvas.clientWidth;
-    this.game.canvasHeight = this.gl.canvas.clientHeight;
+    this.updateCanvasSize();
 
     this.gl.clearColor(1.0, 1.0, 1.0, 1.0);
     this.gl.clearDepth(1.0);
@@ -113,6 +113,15 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
 
   drawScene() {
     this.doDraw();
+  }
+
+  // update canvas size
+  updateCanvasSize() {
+    const canvasRect = this.canvas.nativeElement.getBoundingClientRect();
+    this.game.canvasLeft = canvasRect.left;
+    this.game.canvasTop = canvasRect.top;
+    this.game.canvasWidth = this.gl.canvas.clientWidth;
+    this.game.canvasHeight = this.gl.canvas.clientHeight;
   }
 
   setupView() {
@@ -246,5 +255,21 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
 
   mouseMove(event: MouseEvent) {
     this.inputSvc.mouseMove(event);
+  }
+
+  shouldDisplayMenu() {
+    return this.game.paused;
+  }
+
+  shouldDisplayFps() {
+    return this.game.displayFps;
+  }
+
+  save() {
+    // nothing yet
+  }
+
+  quit() {
+    this.router.navigate(['/']);
   }
 }

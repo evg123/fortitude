@@ -8,9 +8,9 @@ import {Rect} from './rect';
 export class NPC extends Being {
 
   // player constants
-  static readonly NPC_SPEED = 1;
-  static readonly NPC_WIDTH = 1;
-  static readonly NPC_HEIGHT = 1;
+  static readonly NPC_SPEED = 0.5;
+  static readonly NPC_WIDTH = 2;
+  static readonly NPC_HEIGHT = 2;
 
   private movingUp = false;
   private movingDown = false;

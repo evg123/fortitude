@@ -10,3 +10,21 @@
 .frt-play-bg {
   background-color: #d5d5d5;
 }
+
+.frt-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.frt-menu {
+  width: 60%;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  background-color: #d5d5d5;
+}
+
+.frt-menu-button {
+  padding: 10px;
+}

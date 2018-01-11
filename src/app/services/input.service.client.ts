@@ -14,6 +14,7 @@ export class InputService {
     keyboardjs.bind(Keys.RIGHT, this.rightPressed, this.rightUnPressed);
 
     keyboardjs.bind(Keys.MENU, this.menuPressed);
+    keyboardjs.bind(Keys.TOGGLE_FPS, this.toggleFps);
   }
 
   eventPosToWorldPos(evX: number, evY: number) {
@@ -40,6 +41,7 @@ export class InputService {
     } else {
       const [mouseX, mouseY] = this.eventPosToWorldPos(event.clientX, event.clientY);
       const objsAtMouse = this.game.getObjsAtPos(mouseX, mouseY);
+      console.log(objsAtMouse);
       for (const obj of objsAtMouse) {
         const grabbed = this.game.player.grab(obj);
         if (grabbed) {
@@ -53,7 +55,7 @@ export class InputService {
 
   mouseMove(event: MouseEvent) {
     const [mouseX, mouseY] = this.eventPosToWorldPos(event.clientX, event.clientY);
-    // DEBUG console.log(mouseX, mouseY);
+    console.log(mouseX, mouseY);
     this.game.player.setHandPos(mouseX, mouseY);
   }
 
@@ -102,6 +104,10 @@ export class InputService {
 
   menuPressed = (event: KeyEvent) => {
     this.game.togglePause();
+  }
+
+  toggleFps = (event: KeyEvent) => {
+    this.game.toggleFpsDisplay();
   }
 
 }
