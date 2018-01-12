@@ -18,6 +18,8 @@ export class Const {
   static readonly VERT_STRIDE = Const.VERT_COUNT * Const.VERT_SIZE + Const.COLOR_COUNT * Const.COLOR_SIZE;
 
   static readonly DEFAULT_ZOOM = 40.0;
+
+  static readonly FPS_UPDATE_INTERVAL = 1000; // milliseconds
 }
 
 // mapping from function to keyboard/mouse event

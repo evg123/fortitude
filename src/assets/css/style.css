@@ -28,3 +28,14 @@
 .frt-menu-button {
   padding: 10px;
 }
+
+.frt-fps-overlay {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.frt-overlay-text {
+  font-size: 20px;
+  color: #5cb85c;
+}

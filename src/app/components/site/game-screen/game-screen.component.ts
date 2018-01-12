@@ -7,6 +7,7 @@ import {InputService} from '../../../services/input.service.client';
 import {Const} from '../../../constants';
 import {Drawable} from '../../../model/drawable';
 import {Router} from '@angular/router';
+import {del} from 'selenium-webdriver/http';
 
 @Component({
   selector: 'app-game-screen',
@@ -49,12 +50,17 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
   private buffer: WebGLBuffer;
 
   private programInfo: any;
-  private lastTick: number;
+  private lastTick = 0;
+  private rafPaused = false;
+
+  // fps tracking
+  private frameCount = 0;
+  private lastFpsUpdate = 0;
+  fpsDisplay = 0;
 
   constructor(private router: Router,
               private game: GameService,
               private inputSvc: InputService) {
-    this.lastTick = 0;
   }
 
   ngOnInit() {
@@ -94,20 +100,39 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
     this.setupView();
     this.setupVertices();
 
+    this.lastTick = window.performance.now();
+    this.lastFpsUpdate = 0;
     requestAnimationFrame(this.renderCallback);
   }
   // need a lambda in order to retain reference to this object
   renderCallback = (now: number) => {
     if (!this.game.paused) {
       this.tick(now);
+    } else {
+      this.lastTick = 0;
     }
+
+    // TODO stop rendering on pause, need a way to restart the callback
     requestAnimationFrame(this.renderCallback);
   }
 
   tick(now: number) {
-    const deltaMs = now - this.lastTick;
+    this.frameCount++;
+    const sinceUpdate = now - this.lastFpsUpdate;
+    if (sinceUpdate > Const.FPS_UPDATE_INTERVAL) {
+      this.fpsDisplay = this.frameCount;
+      this.lastFpsUpdate = now;
+      this.frameCount = 0;
+    }
 
-    this.game.update(deltaMs);
+    // only update if we have a last tick to get a delta from
+    // otherwise this is the first tick or we just came back from a pause
+    if (this.lastTick !== 0) {
+      const deltaMs = now - this.lastTick;
+      this.game.update(deltaMs);
+    }
+    this.lastTick = now;
+
     this.drawScene();
   }
 
