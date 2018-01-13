@@ -11,17 +11,18 @@ import {Common} from '../common';
 export class Entity extends Drawable {
 
   // x and y direction, will be normalized before converting to velocity
-  xDir = 0;
-  yDir = 0;
-  facing = 0;
-  speed: number; // TODO initalize instead of setting in constructor
+  protected xDir = 0;
+  protected yDir = 0;
+  protected facing = 0;
+  protected speed = 0;
+  usageDistance = 1; // max distance that this item can be used from its holder
+
   holdable = false;
   interactive = true; // collision with this object might have an effect
   collidable = false; // collision with this object will impede movement
 
-  constructor(pos: Rect, speed: number) {
+  constructor(pos: Rect) {
     super(pos);
-    this.speed = speed;
   }
 
   doMove() {

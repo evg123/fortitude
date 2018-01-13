@@ -9,6 +9,7 @@ export class Player extends Being {
 
   // player constants
   static readonly PLAYER_SPEED = 0.3;
+  static readonly PLAYER_GRAB_DIST = 5;
   static readonly PLAYER_WIDTH = 2;
   static readonly PLAYER_HEIGHT = 2;
 
@@ -18,8 +19,9 @@ export class Player extends Being {
   private movingRight = false;
 
   constructor() {
-    super(new Rect(0, 0, Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT),
-      Player.PLAYER_SPEED);
+    super(new Rect(0, 0, Player.PLAYER_WIDTH, Player.PLAYER_HEIGHT));
+    this.speed = Player.PLAYER_SPEED;
+    this.grabDistance = Player.PLAYER_GRAB_DIST;
   }
 
   setMovingUp(val: boolean) {

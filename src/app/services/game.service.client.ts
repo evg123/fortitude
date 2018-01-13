@@ -22,7 +22,7 @@ export class GameService {
   zoomScale = Const.DEFAULT_ZOOM;
 
   paused = false;
-  displayFps = false;
+  displayFps = true;
 
   // things that do not move
   private staticDrawList: Drawable[] = [];
@@ -125,20 +125,30 @@ export class GameService {
         if (other.collidable && ent.collidable) {
           // x axis
           if (xOff > 0) {
-            const xDiff = Math.max(0, other.pos.left() - ent.pos.right());
-            newXOff = Math.min(newXOff, xDiff);
+            // find the distance to the other object on this axis
+            const xDiff = other.pos.left() - ent.pos.right();
+            if (xDiff >= 0) {
+              // limit xOff to that distance
+              newXOff = Math.min(newXOff, xDiff);
+            } // else: a negative value means we aren't going to intersect in this axis
           } else if (xOff < 0) {
-            const xDiff = Math.min(0, other.pos.right() - ent.pos.left());
-            newXOff = Math.max(newXOff, xDiff);
+            const xDiff = other.pos.right() - ent.pos.left();
+            if (xDiff <= 0) {
+              newXOff = Math.max(newXOff, xDiff);
+            }
           }
 
           // y axis
           if (yOff > 0) {
-            const yDiff = Math.max(0, other.pos.top() - ent.pos.bot());
-            newYOff = Math.min(newYOff, yDiff);
+            const yDiff = other.pos.top() - ent.pos.bot();
+            if (yDiff >= 0) {
+              newYOff = Math.min(newYOff, yDiff);
+            }
           } else if (yOff < 0) {
-            const yDiff = Math.min(0, other.pos.bot() - ent.pos.top());
-            newYOff = Math.max(newYOff, yDiff);
+            const yDiff = other.pos.bot() - ent.pos.top();
+            if (yDiff <= 0) {
+              newYOff = Math.max(newYOff, yDiff);
+            }
           }
         }
 

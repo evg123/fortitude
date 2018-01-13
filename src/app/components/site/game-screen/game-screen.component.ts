@@ -294,6 +294,10 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
     // nothing yet
   }
 
+  displaySettings() {
+    // noting yet
+  }
+
   quit() {
     this.router.navigate(['/']);
   }

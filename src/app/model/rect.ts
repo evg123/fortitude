@@ -84,4 +84,15 @@ export class Rect {
     return this.left() + xOff < other.right() && this.right() + xOff > other.left()
       && this.top() + yOff < other.bot() && this.bot() + yOff > other.top();
   }
+
+  // return the distance from the center of this rect to the center of other
+  distanceToRect(other: Rect) {
+    return this.distanceToPoint(other.xpos(), other.ypos());
+  }
+
+  distanceToPoint(otherX: number, otherY: number) {
+    const diffX = this._xpos - otherX;
+    const diffY = this._ypos - otherY;
+    return Math.sqrt(diffX * diffX + diffY * diffY);
+  }
 }

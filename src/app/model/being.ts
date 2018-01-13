@@ -5,14 +5,17 @@
 
 import {Entity} from './entity';
 import {Rect} from './rect';
+import {Const} from '../constants';
+import {Common} from '../common';
 
 export abstract class Being extends Entity {
 
   private inventory: Entity[];
   private held: Entity;
+  protected grabDistance = 1;
 
-  constructor(pos: Rect, speed: number) {
-    super(pos, speed);
+  constructor(pos: Rect) {
+    super(pos);
     this.inventory = [];
     this.collidable = true;
   }
@@ -29,9 +32,13 @@ export abstract class Being extends Entity {
     return !!this.held;
   }
 
+  canGrab(item: Entity) {
+    return (item.holdable && this.pos.distanceToRect(item.pos) <= this.grabDistance);
+  }
+
   // return true if item was successfully grabbed
   grab(item: Entity) {
-    if (item.holdable) {
+    if (this.canGrab(item)) {
       this.hold(item);
       return true;
     }
@@ -44,14 +51,13 @@ export abstract class Being extends Entity {
 
   setHandPos(px: number, py: number) {
     if (this.isHolding()) {
+      if (this.pos.distanceToPoint(px, py) > this.held.usageDistance) {
+        // held item distance depends on max usage distance of the item
+        const [xOff, yOff] = Common.normalize(px - this.pos.xpos(), py - this.pos.ypos());
+        px = this.pos.xpos() + xOff * this.held.usageDistance;
+        py = this.pos.ypos() + yOff * this.held.usageDistance;
+      }
       this.held.pos.moveAbs(px, py);
-    }
-  }
-
-  updateHeldDir(dx: number, dy: number) {
-    if (this.isHolding()) {
-      this.held.xDir = dx;
-      this.held.yDir = dy;
     }
   }
 
