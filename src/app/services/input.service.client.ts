@@ -8,13 +8,20 @@ import {KeyEvent} from 'keyboardjs';
 export class InputService {
 
   constructor(private game: GameService) {
+    // meta game keys
+    keyboardjs.bind(Keys.MENU, this.menuPressed);
+    keyboardjs.bind(Keys.TOGGLE_FPS, this.toggleFps);
+
+    // movement
     keyboardjs.bind(Keys.UP, this.upPressed, this.upUnPressed);
     keyboardjs.bind(Keys.DOWN, this.downPressed, this.downUnPressed);
     keyboardjs.bind(Keys.LEFT, this.leftPressed, this.leftUnPressed);
     keyboardjs.bind(Keys.RIGHT, this.rightPressed, this.rightUnPressed);
 
-    keyboardjs.bind(Keys.MENU, this.menuPressed);
-    keyboardjs.bind(Keys.TOGGLE_FPS, this.toggleFps);
+    // inventory
+    keyboardjs.bind(Keys.INVENTORY, this.inventoryPressed);
+    keyboardjs.bind(Keys.PUT_AWAY, this.putAwayPressed);
+    keyboardjs.bind(Keys.SPAWN_BLOCK, this.spawnBlockPressed);
   }
 
   eventPosToWorldPos(evX: number, evY: number) {
@@ -108,6 +115,18 @@ export class InputService {
 
   toggleFps = (event: KeyEvent) => {
     this.game.toggleFpsDisplay();
+  }
+
+  inventoryPressed = (event: KeyEvent) => {
+    this.game.toggleInventoryDisplay();
+  }
+
+  sheathPressed = (event: KeyEvent) => {
+    this.game.player.sheath();
+  }
+
+  spawnBlockPressed = (event: KeyEvent) => {
+    this.game.spawnBlockForPlayer();
   }
 
 }

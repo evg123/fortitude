@@ -264,6 +264,11 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
     // build an array of positions/colors
     const vertInfo: number[] = [];
     for (const obj of this.game.getDrawList()) {
+      if (obj.isHidden()) {
+        // don't draw this one
+        continue;
+      }
+
       for (const item of obj.getVertInfo()) {
         vertInfo.push(item);
       }
@@ -286,6 +291,10 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
     return this.game.paused;
   }
 
+  shouldDisplayInventory() {
+    return this.game.displayInventory;
+  }
+
   shouldDisplayFps() {
     return this.game.displayFps;
   }
@@ -300,5 +309,9 @@ export class GameScreenComponent implements OnInit, AfterViewInit {
 
   quit() {
     this.router.navigate(['/']);
+  }
+
+  getInventory() {
+    return this.game.player.getInventory();
   }
 }

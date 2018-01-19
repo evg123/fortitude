@@ -26,13 +26,20 @@ export class Const {
 
 // mapping from function to keyboard/mouse event
 export class Keys {
+  // meta game keys
+  static readonly MENU = 'esc';
+  static readonly TOGGLE_FPS = 'shift + f';
+
+  // movement
   static readonly UP = 'w';
   static readonly DOWN = 's';
   static readonly LEFT = 'a';
   static readonly RIGHT = 'd';
 
-  static readonly MENU = 'esc';
-  static readonly TOGGLE_FPS = 'shift + f';
+  // inventory
+  static readonly INVENTORY = 'i';
+  static readonly PUT_AWAY = 'e';
+  static readonly SPAWN_BLOCK = 'f';
 }
 
 // shape vertex arrays

@@ -22,6 +22,7 @@ export class GameService {
   zoomScale = Const.DEFAULT_ZOOM;
 
   paused = false;
+  displayInventory = false;
   displayFps = true;
 
   // things that do not move
@@ -41,6 +42,10 @@ export class GameService {
 
   getDrawList() {
     return this.entList;
+  }
+
+  addToEntList(item: Entity) {
+    this.entList.push(item);
   }
 
   update(delta: number) {
@@ -63,39 +68,32 @@ export class GameService {
     }
 
     {
-      const block = new Block();
+      const block = this.spawnBlock();
       block.pos.moveAbs(995.5, 1002);
-      this.entList.push(block);
     }
     {
-      const block = new Block();
+      const block = this.spawnBlock();
       block.pos.moveAbs(996.5, 1002.5);
-      this.entList.push(block);
     }
     {
-      const block = new Block();
+      const block = this.spawnBlock();
       block.pos.moveAbs(999.5, 1002);
-      this.entList.push(block);
     }
     {
-      const block = new Block();
+      const block = this.spawnBlock();
       block.pos.moveAbs(1001.5, 1002);
-      this.entList.push(block);
     }
     {
-      const block = new Block();
+      const block = this.spawnBlock();
       block.pos.moveAbs(1003.5, 1002);
-      this.entList.push(block);
     }
     {
-      const block = new Block();
+      const block = this.spawnBlock();
       block.pos.moveAbs(1005.5, 1002);
-      this.entList.push(block);
     }
     {
-      const block = new Block();
+      const block = this.spawnBlock();
       block.pos.moveAbs(1020, 1025);
-      this.entList.push(block);
     }
   }
 
@@ -120,9 +118,9 @@ export class GameService {
     let newXOff = xOff;
     let newYOff = yOff;
     for (const other of this.entList) {
-      if (ent !== other && other.interactive && ent.pos.collidesWith(other.pos, newXOff, newYOff)) {
+      if (ent !== other && other.isInteractive && ent.pos.collidesWith(other.pos, newXOff, newYOff)) {
         // a collision occurred
-        if (other.collidable && ent.collidable) {
+        if (other.isCollidable && ent.isCollidable) {
           // x axis
           if (xOff > 0) {
             // find the distance to the other object on this axis
@@ -196,5 +194,20 @@ export class GameService {
 
   toggleFpsDisplay() {
     this.displayFps = !this.displayFps;
+  }
+
+  toggleInventoryDisplay() {
+    this.displayInventory = !this.displayInventory;
+  }
+
+  spawnBlockForPlayer() {
+    const block = this.spawnBlock();
+    this.player.grab(block);
+  }
+
+  spawnBlock() {
+    const block = new Block();
+    this.addToEntList(block);
+    return block;
   }
 }

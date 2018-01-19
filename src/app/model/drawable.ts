@@ -10,6 +10,7 @@ export abstract class Drawable {
 
   protected static game: GameService = null;
 
+  // unique id for this object
   protected static nextObjId = 0;
   objId;
 

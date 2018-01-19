@@ -10,6 +10,8 @@ import {Common} from '../common';
 
 export class Entity extends Drawable {
 
+  name: string; // used in inventory display
+
   // x and y direction, will be normalized before converting to velocity
   protected xDir = 0;
   protected yDir = 0;
@@ -17,12 +19,35 @@ export class Entity extends Drawable {
   protected speed = 0;
   usageDistance = 1; // max distance that this item can be used from its holder
 
-  holdable = false;
-  interactive = true; // collision with this object might have an effect
-  collidable = false; // collision with this object will impede movement
+  protected interactive = true; // collision with this object might have an effect
+  protected collidable = false; // collision with this object will impede movement
+  protected hidden = false; // this object will not be drawn, but will still be updated
+
+  holdable = false; // can be held by a being
+  inventoryable = false; // can be stored in a being's inventory
 
   constructor(pos: Rect) {
     super(pos);
+  }
+
+  isInteractive() {
+    return !this.hidden && this.interactive;
+  }
+
+  isCollidable() {
+    return !this.hidden && this.interactive && this.collidable;
+  }
+
+  isHidden() {
+    return this.hidden;
+  }
+
+  hide() {
+    this.hidden = true;
+  }
+
+  show() {
+    this.hidden = false;
   }
 
   doMove() {

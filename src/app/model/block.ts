@@ -21,7 +21,9 @@ export class Block extends Entity {
   constructor() {
     super(new Rect(0, 0, Block.BLOCK_WIDTH, Block.BLOCK_HEIGHT));
     this.setColor(0, 0, 0, 1);
+    this.name = 'Standard Block';
     this.holdable = true;
+    this.inventoryable = true;
     this.collidable = true;
     this.usageDistance = Block.BLOCK_USAGE_DIST;
   }

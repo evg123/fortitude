@@ -19,6 +19,18 @@
     </div>
   </div>
 
+  <div *ngIf="shouldDisplayInventory()">
+    <div class="container frt-inventory">
+      <div *ngFor="let item of getInventory()">
+        <li class="list-group-item">
+          <span>
+            {{item.name}}
+          </span>
+        </li>
+      </div>
+    </div>
+  </div>
+
   <div *ngIf="shouldDisplayFps()">
     <div class="container frt-fps-overlay">
       <span class="frt-overlay-text">{{fpsDisplay}}</span>
