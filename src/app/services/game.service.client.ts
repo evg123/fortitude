@@ -202,6 +202,7 @@ export class GameService {
 
   spawnBlockForPlayer() {
     const block = this.spawnBlock();
+    block.pos.moveAbs(this.player.pos.xpos(), this.player.pos.ypos());
     this.player.grab(block);
   }
 

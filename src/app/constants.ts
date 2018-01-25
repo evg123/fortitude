@@ -20,8 +20,6 @@ export class Const {
   static readonly DEFAULT_ZOOM = 40.0;
 
   static readonly FPS_UPDATE_INTERVAL = 1000; // milliseconds
-
-  static readonly GRAB_DISTANCE = 5;
 }
 
 // mapping from function to keyboard/mouse event

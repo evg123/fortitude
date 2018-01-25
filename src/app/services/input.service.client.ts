@@ -20,7 +20,7 @@ export class InputService {
 
     // inventory
     keyboardjs.bind(Keys.INVENTORY, this.inventoryPressed);
-    keyboardjs.bind(Keys.PUT_AWAY, this.putAwayPressed);
+    keyboardjs.bind(Keys.PUT_AWAY, this.sheathPressed);
     keyboardjs.bind(Keys.SPAWN_BLOCK, this.spawnBlockPressed);
   }
 
